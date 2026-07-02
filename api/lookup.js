@@ -1,96 +1,33 @@
-// This runs on Vercel's servers, never in the user's browser.
-// The API key lives in an environment variable, so it's never exposed.
-
-const SYSTEM_PROMPT = `You are a veterinary pharmaceutical reference assistant for cats and dogs.
-
-Task: given a medicine name (brand or generic, possibly misspelled), return structured factual data about it.
-
-Constraints:
-- Do not provide medical advice.
-- Do not provide dosage instructions.
-- Do not invent or guess medicines, ingredients, or brands. If uncertain, use "unknown".
-- Prefer "unknown" over speculation.
-- Only include well-established equivalences.
-
-Respond with ONLY a single JSON object, no markdown fences, no preamble, matching exactly this shape:
-{
-  "medicine": { "brand": "string|unknown", "generic": "string|unknown", "type": "veterinary|human|both|unknown" },
-  "active_ingredients": ["string"],
-  "equivalent_products": {
-    "veterinary_brands": ["string|unknown"],
-    "human_equivalents": ["string|unknown"],
-    "note": "string"
-  },
-  "human_use": { "used_in_humans": "yes|no|unknown", "context": "string|unknown" },
-  "safety_notes": ["string"]
-}
-
-If the input does not look like a real medicine name at all, set all fields to "unknown" / empty arrays and add a safety_notes entry saying the name wasn't recognized.`;
-
-module.exports = async (req, res) => {
-  // Only allow POST requests
-  if (req.method !== 'POST') {
-    res.status(405).json({ error: 'Method not allowed' });
-    return;
-  }
-
-  const { medicineName } = req.body || {};
-  if (!medicineName || typeof medicineName !== 'string' || !medicineName.trim()) {
-    res.status(400).json({ error: 'Missing medicineName' });
-    return;
-  }
-
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    res.status(500).json({ error: 'Server is not configured with an API key yet.' });
-    return;
-  }
-
-  try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-5',
-        max_tokens: 1000,
-        system: SYSTEM_PROMPT,
-        messages: [{ role: 'user', content: `Medicine name: ${medicineName.trim()}` }]
-      })
-    });
-
-    if (!response.ok) {
-      const errText = await response.text();
-      res.status(502).json({ error: 'Upstream API error', detail: errText });
-      return;
-    }
-
-    const data = await response.json();
-    const textBlock = (data.content || []).find(b => b.type === 'text');
-    if (!textBlock) {
-      res.status(502).json({ error: 'No text in model response' });
-      return;
-    }
-
-    let clean = textBlock.text.trim()
-      .replace(/^```json/i, '')
-      .replace(/^```/, '')
-      .replace(/```$/, '')
-      .trim();
-
-    let parsed;
-    try {
-      parsed = JSON.parse(clean);
-    } catch (e) {
-      res.status(502).json({ error: 'Could not parse model output as JSON' });
-      return;
-    }
-
-    res.status(200).json(parsed);
-  } catch (err) {
-    res.status(500).json({ error: 'Server error', detail: String(err) });
-  }
-};
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.6">
+  <style type="text/css">
+    body {background-color: #eaeee5}
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 26.0px 'Helvetica Neue'; color: #122822; -webkit-text-stroke: #122822}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px 'Helvetica Neue'; color: #1b3a32; -webkit-text-stroke: #1b3a32}
+    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px 'Helvetica Neue'; color: #1b3a32; -webkit-text-stroke: #1b3a32}
+    p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px 'Helvetica Neue'; color: #16211d; -webkit-text-stroke: #16211d; background-color: #ffffff; min-height: 18.0px}
+    p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 14.0px 'Helvetica Neue'; color: #eaeee5; -webkit-text-stroke: #eaeee5; background-color: #122822}
+    p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px 'Helvetica Neue'; color: #934f22; -webkit-text-stroke: #934f22}
+    p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px 'Helvetica Neue'; color: #787f73; -webkit-text-stroke: #787f73}
+    span.s1 {font-kerning: none}
+    span.s2 {font-kerning: none; color: #934f22; -webkit-text-stroke: 0px #934f22}
+    span.s3 {font-kerning: none; color: #1b3a32; -webkit-text-stroke: 0px #1b3a32}
+    span.s4 {text-decoration: underline ; font-kerning: none}
+  </style>
+</head>
+<body>
+<p class="p1"><span class="s1">vet</span><span class="s2">look</span><span class="s1">up</span></p>
+<p class="p2"><span class="s1">BETA</span></p>
+<p class="p3"><span class="s1">"What's actually in this medicine my pet was given?"</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p5"><span class="s1">Look up</span></p>
+<p class="p6"><span class="s3">Try: </span><span class="s4">Rimadyl</span><span class="s3"> · </span><span class="s4">Apoquel</span><span class="s3"> · </span><span class="s4">Cerenia</span></p>
+<p class="p7"><span class="s1">Vetlookup results are generated by AI and may be incomplete or wrong — always verify with a licensed veterinarian, especially before giving any human medication to a pet. Never substitute medications without professional guidance.</span></p>
+</body>
+</html>
