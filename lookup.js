@@ -24,14 +24,14 @@ const MAX_NAME_LENGTH = 100;
 function sanitizeMedicineName(raw) {
   if (typeof raw !== 'string') return null;
   let cleaned = raw.trim().slice(0, MAX_NAME_LENGTH);
-  // Strip characters with no business being in a medicine name — reduces
+  // Strip characters with no business being in a medicine name â€” reduces
   // surface area for prompt-injection-style input.
   cleaned = cleaned.replace(/[^\p{L}\p{N}\s\-/().,%'+]/gu, '');
   return cleaned.trim() || null;
 }
 
 function log(event, details) {
-  // Vercel captures console output in Function Logs automatically — no
+  // Vercel captures console output in Function Logs automatically â€” no
   // extra service needed to at least see what's happening in production.
   console.log(JSON.stringify({ event, time: new Date().toISOString(), ...details }));
 }
@@ -44,9 +44,9 @@ Rules:
 - If information is not verifiable/well-established, return "unknown".
 - Do NOT provide medical advice, diagnosis, or dosage instructions.
 - Only list equivalents that are confirmed to share the same active ingredient(s).
-- Safety notes must be general, non-dosage warnings only (e.g. known toxicity risks, species-specific dangers) — never doses, frequencies, or administration instructions.
+- Safety notes must be general, non-dosage warnings only (e.g. known toxicity risks, species-specific dangers) â€” never doses, frequencies, or administration instructions.
 - If the medicine name given is ambiguous, misspelled beyond recognition, or could refer to multiple different products, do not guess: set "clarification_needed" to a short question asking the user to confirm which product they mean, and leave the other fields as "unknown"/empty. Otherwise set "clarification_needed" to null.
-- Set "data_confidence" to "ai_estimated" for every response — this app does not yet verify against a live regulatory database, and the UI must be honest about that. Never set it to "verified".
+- Set "data_confidence" to "ai_estimated" for every response â€” this app does not yet verify against a live regulatory database, and the UI must be honest about that. Never set it to "verified".
 
 Respond with ONLY a single JSON object, no markdown fences, no preamble, matching exactly this shape:
 {
@@ -90,7 +90,7 @@ module.exports = async (req, res) => {
     return;
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = (process.env.ANTHROPIC_API_KEY || '').trim();
   if (!apiKey) {
     log('missing_api_key', { ip });
     res.status(500).json({ error: 'Server is not configured with an API key yet.' });
